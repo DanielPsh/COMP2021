@@ -45,7 +45,8 @@ public class BaseNIntegerUnsigned {
      */
     public boolean canBeRepresentedInInteger() {
         // Add missing code here.
-        return toInteger() <= Integer.MAX_VALUE;
+        toInteger();
+        return true;
     }
 
     /**
@@ -57,7 +58,12 @@ public class BaseNIntegerUnsigned {
             throw new IllegalStateException();
 
         // Add missing code here.
-
+        int value = 0;
+        for (int i = 0; i < getNumberOfPositions(); i++)
+        {
+            value += (int) (getValueAtPosition(i) * Math.pow(base, i));
+        }
+        return value;
     }
 
     /**
@@ -65,7 +71,7 @@ public class BaseNIntegerUnsigned {
      */
     public String toString(){
         // Add missing code here.
-
+        return magnitude + "(" + base + ")";
     }
 
     /**
@@ -74,7 +80,11 @@ public class BaseNIntegerUnsigned {
      */
     public boolean equals(Object other){
         // Add missing code here.
-
+        if (this == other)
+            return true;
+        if (!(other instanceof BaseNIntegerUnsigned that))
+            return false;
+        return this.base == that.base && this.magnitude.equals(that.magnitude);
     }
 
     /**
@@ -90,7 +100,17 @@ public class BaseNIntegerUnsigned {
             throw new IllegalArgumentException();
 
         // Add missing code here.
-
+        int maxLength = Math.max(getNumberOfPositions(), other.getNumberOfPositions());
+        for (int i = maxLength - 1; i >= 0; i--)
+        {
+            int thisValue = this.getValueAtPosition(i);
+            int otherValue = other.getValueAtPosition(i);
+            if (thisValue != otherValue)
+            {
+                return Integer.compare(thisValue, otherValue);
+            }
+        }
+        return 0;
     }
 
     /**
@@ -105,7 +125,23 @@ public class BaseNIntegerUnsigned {
             throw new IllegalArgumentException();
 
         // Add missing code here.
+        StringBuilder result = new StringBuilder();
+        int carry = 0;
+        int maxLength = Math.max(getNumberOfPositions(), other.getNumberOfPositions());
 
+        for (int i = 0; i < maxLength; i++)
+        {
+            int sum = getValueAtPosition(i) + other.getValueAtPosition(i) + carry;
+            carry = sum / getBase();
+            result.append(getDigitFromValue(sum % getBase(), getBase()));
+        }
+
+        if (carry > 0)
+        {
+            result.append(getDigitFromValue(carry, getBase()));
+        }
+
+        return new BaseNIntegerUnsigned(result.reverse().toString(), getBase());
     }
 
     /**
@@ -121,7 +157,24 @@ public class BaseNIntegerUnsigned {
             throw new IllegalArgumentException();
 
         // Add missing code here.
+        StringBuilder result = new StringBuilder();
+        int borrow = 0;
+        int maxLength = Math.max(getNumberOfPositions(), other.getNumberOfPositions());
 
+        for (int i = 0; i < maxLength; i++)
+        {
+            int sub = getValueAtPosition(i) - other.getValueAtPosition(i) - borrow;
+            if (sub < 0)
+            {
+                sub += getBase();
+                borrow = 1;
+            } else {
+                borrow = 0;
+            }
+            result.append(getDigitFromValue(sub, getBase()));
+        }
+
+        return new BaseNIntegerUnsigned(result.reverse().toString(), getBase());
     }
 
     //==================================================================================== Private members
@@ -227,7 +280,14 @@ public class BaseNIntegerUnsigned {
             return false;
 
         // Add missing code here.
-
+        for (char c : magnitude.toCharArray())
+        {
+            if (getValueFromDigit(c, base) < 0)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

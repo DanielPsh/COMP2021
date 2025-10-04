@@ -4,8 +4,20 @@ public class SpecialNumber {
 
 	public static boolean isSpecial(int num) {
 		// Task 6: Complete the method so that it returns true if and only if 'num' is special
+        if (num < 0)
+            return false;
 
-		return false;
+        int original = num;
+        int sum = 0;
+        int digits = String.valueOf(num).length();
+
+        while (num > 0) {
+            int digit = num % 10;
+            sum += (int) + Math.pow(digit, digits);
+            num /= 10;
+        }
+
+        return sum == original;
 	}
 
 
